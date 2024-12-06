@@ -10,35 +10,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-interface Item {
-  id: string;
-  name: string;
-}
-
-interface Warehouse {
-  id: string;
-  name: string;
-}
-
-export interface NewAddAdjustmentsProps {
-  // Named export
-  initialData?: {
-    referenceNumber?: string;
-    addStockQty?: string | number;
-    notes?: string;
-    receivingWarehouseId?: string;
-    itemId?: string;
-    id?: string;
-  };
-  isUpdate?: boolean;
-}
-
-const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
-  initialData = {},
-  isUpdate = false,
-}) => {
-  const [items, setItems] = useState<Item[]>([]);
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+const NewAddAdjustments = ({ initialData = {}, isUpdate = false }) => {
+  const [items, setItems] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [formData, setFormData] = useState({
     referenceNumber: initialData.referenceNumber || "",
     addStockQty: initialData.addStockQty || "",
@@ -46,15 +20,15 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     receivingWarehouseId: initialData.receivingWarehouseId || "",
     selectitem: initialData.itemId || "",
   });
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedItems: Item[] = await GetData("items");
-        const fetchedWarehouses: Warehouse[] = await GetData("warehouse");
+        const fetchedItems = await GetData("items");
+        const fetchedWarehouses = await GetData("warehouse");
 
         setItems(fetchedItems);
         setWarehouses(fetchedWarehouses);
@@ -74,11 +48,7 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     fetchData();
   }, [initialData]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -88,7 +58,7 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
   };
 
   const validateForm = () => {
-    const errors: { [key: string]: string } = {};
+    const errors = {};
     if (!formData.referenceNumber)
       errors.referenceNumber = "Reference number is required.";
     if (!formData.addStockQty)
@@ -100,7 +70,7 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     return errors;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
@@ -111,7 +81,7 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     try {
       const dataToSend = {
         ...formData,
-        addStockQty: parseInt(formData.addStockQty as string, 10),
+        addStockQty: parseInt(formData.addStockQty, 10),
         itemId: formData.selectitem,
       };
       if (isUpdate) {
@@ -221,4 +191,4 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
   );
 };
 
-export default NewAddAdjustments; // Default export of the component
+export default NewAddAdjustments;
