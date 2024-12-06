@@ -21,6 +21,7 @@ interface Warehouse {
 }
 
 export interface NewAddAdjustmentsProps {
+  // Named export
   initialData?: {
     referenceNumber?: string;
     addStockQty?: string | number;
@@ -220,4 +221,4 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
   );
 };
 
-export default NewAddAdjustments;
+export default NewAddAdjustments; // Default export of the component
