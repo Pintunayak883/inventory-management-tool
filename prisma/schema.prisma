@@ -1,0 +1,144 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  items       Item[]  @relation("CategoryToItems")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Item {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  title                  String
+  description            String?
+  category               Category @relation("CategoryToItems", fields: [categoryId], references: [id])
+  categoryId             String   @db.ObjectId
+  sku                    String   @unique
+  barcode                String?
+  quantity               Int
+  unit                   Unit     @relation("ItemUnit", fields: [unitId], references: [id]) 
+  unitId                 String   @db.ObjectId
+  brand                  Brand    @relation("ItemBrand", fields: [brandId], references: [id])
+  brandId                String   @db.ObjectId
+  sellingPrice           Float
+  buyingPrice            Float
+  supplier               Supplier @relation(fields: [supplierId], references: [id])
+  supplierId             String   @db.ObjectId
+  reOrderPoint           Int
+  location               String?
+  imageUrl               String?
+  weight                 Float?
+  dimensions             String?
+  taxRate                Float
+  notes                  String?
+  warehouse              Warehouse @relation("ItemToWarehouse", fields: [warehouseId], references: [id])
+  warehouseId            String   @db.ObjectId
+  AddStockAdjustment     AddStockAdjustment[]
+  TransferStockAdjustment TransferStockAdjustment[]
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+
+
+model Unit {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  abbreviation String
+  items        Item[] @relation("ItemUnit")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Brand {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  items Item[] @relation("ItemBrand") // Add this to complete the relation with Item
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Supplier {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  phone         String?
+  email         String?
+  address       String?
+  contactPerson String?
+  supplierCode  String  @unique
+  paymentTerms  String?
+  taxID         String?
+  notes         String?
+  location      String?
+  description   String?
+  Item          Item[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Warehouse {
+ id    String @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  location      String?
+  description   String?
+  warehouseType String
+  items       Item[]  @relation("ItemToWarehouse")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AddStockAdjustment {
+   id                String @id @default(auto()) @map("_id") @db.ObjectId
+   referenceNumber   String
+   addStockQty       Int
+   notes             String?
+   selectitem        String?
+   receivingWarehouseId String @db.ObjectId
+  item Item @relation(fields:[itemId],references:[id])
+   itemId String @db.ObjectId
+   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model TransferStockAdjustment {
+   id    String @id @default(auto()) @map("_id") @db.ObjectId
+   referenceNumber String
+   transferStockQty Int
+   notes String?
+   givingWarehouseId String @db.ObjectId
+   receivingWarehouseId String @db.ObjectId
+   item Item @relation(fields:[itemId],references:[id])
+   itemId String @db.ObjectId
+   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String?    @unique
+  emailVerified  DateTime?
+  image          String?
+  Password       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model YourModel {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  createdAt DateTime @default(now())         // Automatically set at creation
+  updatedAt DateTime @updatedAt              // Automatically updates on modification
+}
+
