@@ -20,7 +20,7 @@ interface Warehouse {
   name: string;
 }
 
-interface NewAddAdjustmentsProps {
+export interface NewAddAdjustmentsProps {
   initialData?: {
     referenceNumber?: string;
     addStockQty?: string | number;
