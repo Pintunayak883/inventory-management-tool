@@ -10,7 +10,21 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-const NewAddAdjustments = ({ initialData = {}, isUpdate = false }) => {
+interface NewAddAdjustmentsProps {
+  initialData?: {
+    referenceNumber?: string;
+    addStockQty?: number;
+    notes?: string;
+    receivingWarehouseId?: string;
+    itemId?: string;
+  };
+  isUpdate?: boolean;
+}
+
+const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
+  initialData = {},
+  isUpdate = false,
+}) => {
   const [items, setItems] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [formData, setFormData] = useState({
