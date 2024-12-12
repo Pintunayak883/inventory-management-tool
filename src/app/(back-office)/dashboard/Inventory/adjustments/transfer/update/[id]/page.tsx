@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import NewTransferAdjustments from "../../new/page";
 import { GetData } from "@/lib/getData";

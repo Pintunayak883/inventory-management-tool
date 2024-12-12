@@ -10,16 +10,17 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-interface NewAddAdjustmentsProps {
+type NewAddAdjustmentsProps = {
   initialData?: {
     referenceNumber?: string;
     addStockQty?: number;
     notes?: string;
     receivingWarehouseId?: string;
     itemId?: string;
+    id?: string;
   };
   isUpdate?: boolean;
-}
+};
 
 const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
   initialData = {},

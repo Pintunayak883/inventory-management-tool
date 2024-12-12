@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import { GetData } from "@/lib/getData";
 import NewAddAdjustments from "../../new/page";
