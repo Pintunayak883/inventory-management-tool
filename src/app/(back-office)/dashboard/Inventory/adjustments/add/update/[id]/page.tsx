@@ -8,10 +8,9 @@ interface UpdateAdjustmentsProps {
   };
 }
 
-const UpdateAdjustments: React.FC<UpdateAdjustmentsProps> = async ({
+const UpdateAdjustments = async ({
   params: { id },
-}) => {
-  // Fetch adjustment data by ID
+}: UpdateAdjustmentsProps) => {
   const addAdjustments = await GetData(`adjustments/add/${id}`);
 
   return <NewAddAdjustments initialData={addAdjustments} isUpdate={true} />;
