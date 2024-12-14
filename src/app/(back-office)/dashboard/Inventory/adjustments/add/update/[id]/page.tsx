@@ -13,7 +13,14 @@ const UpdateAdjustments = async ({
 }: UpdateAdjustmentsProps) => {
   const addAdjustments = await GetData(`adjustments/add/${id}`);
 
-  return <NewAddAdjustments initialData={addAdjustments} isUpdate={true} />;
+  return (
+    <NewAddAdjustments
+      initialData={{
+        ...addAdjustments,
+        id: id,
+      }}
+    />
+  );
 };
 
 export default UpdateAdjustments;

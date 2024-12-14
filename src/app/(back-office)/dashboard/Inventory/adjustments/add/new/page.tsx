@@ -10,30 +10,30 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-interface NewAddAdjustmentsProps {
-  initialData?: {
-    referenceNumber?: string;
-    addStockQty?: number;
-    notes?: string;
-    receivingWarehouseId?: string;
-    itemId?: string;
-    id?: string;
-  };
-  isUpdate?: boolean;
+export interface InitialData {
+  id?: string;
+  referenceNumber?: string;
+  addStockQty?: number;
+  notes?: string;
+  receivingWarehouseId?: string;
+  itemId?: string;
 }
 
-const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
-  initialData = {},
-  isUpdate = false,
-}) => {
+export interface NewAddAdjustmentsProps {
+  initialData?: InitialData;
+}
+
+export default function NewAddAdjustments({
+  initialData,
+}: NewAddAdjustmentsProps) {
   const [items, setItems] = useState<any[]>([]);
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    referenceNumber: initialData.referenceNumber || "",
-    addStockQty: initialData.addStockQty?.toString() || "",
-    notes: initialData.notes || "",
-    receivingWarehouseId: initialData.receivingWarehouseId || "",
-    selectitem: initialData.itemId || "",
+    referenceNumber: initialData?.referenceNumber || "",
+    addStockQty: initialData?.addStockQty?.toString() || "",
+    notes: initialData?.notes || "",
+    receivingWarehouseId: initialData?.receivingWarehouseId || "",
+    selectitem: initialData?.itemId || "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -48,11 +48,12 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
         setItems(fetchedItems);
         setWarehouses(fetchedWarehouses);
 
+        // Ensure default selections if not provided in initial data
         setFormData((prevData) => ({
           ...prevData,
-          selectitem: initialData.itemId || fetchedItems[0]?.id || "",
+          selectitem: initialData?.itemId || fetchedItems[0]?.id || "",
           receivingWarehouseId:
-            initialData.receivingWarehouseId || fetchedWarehouses[0]?.id || "",
+            initialData?.receivingWarehouseId || fetchedWarehouses[0]?.id || "",
         }));
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -69,7 +70,7 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: name === "addStockQty" ? value : value,
+      [name]: value,
     }));
     setFormErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
@@ -101,22 +102,26 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
         addStockQty: parseInt(formData.addStockQty, 10),
         itemId: formData.selectitem,
       };
-      if (isUpdate) {
+
+      // Check if it's an update or create scenario
+      if (initialData?.id) {
+        // Update existing record
         await axios.put(
           `http://localhost:3000/api/adjustments/add/${initialData.id}`,
           dataToSend
         );
         toast.success("Stock updated successfully.");
       } else {
+        // Create new record
         await axios.post(
           `http://localhost:3000/api/adjustments/add`,
           dataToSend
         );
         toast.success("New stock added successfully.");
       }
+
       router.push("/dashboard/Inventory/adjustments");
       router.refresh();
-      handleReset();
     } catch (error) {
       console.error("Error in form submission:", error);
       toast.error("Something went wrong!");
@@ -125,21 +130,10 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     }
   };
 
-  const handleReset = () => {
-    setFormData({
-      referenceNumber: initialData.referenceNumber || "",
-      addStockQty: "",
-      notes: "",
-      receivingWarehouseId: "",
-      selectitem: "",
-    });
-    setFormErrors({});
-  };
-
   return (
     <>
       <FormHeader
-        title={isUpdate ? "Update Add Stock" : "New Add Stock"}
+        title={initialData?.id ? "Update Add Stock" : "New Add Stock"}
         href={"/dashboard/Inventory/adjustments"}
       />
       <div className="w-full max-w-4xl mx-auto my-3 p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8">
@@ -200,12 +194,10 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
           />
           <SubmitButton
             loading={loading}
-            title={isUpdate ? "Update Add Stock" : "New Add Stock"}
+            title={initialData?.id ? "Update Add Stock" : "New Add Stock"}
           />
         </form>
       </div>
     </>
   );
-};
-
-export default NewAddAdjustments;
+}
