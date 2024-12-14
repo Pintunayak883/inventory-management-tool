@@ -10,7 +10,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-type NewAddAdjustmentsProps = {
+interface NewAddAdjustmentsProps {
   initialData?: {
     referenceNumber?: string;
     addStockQty?: number;
@@ -20,22 +20,22 @@ type NewAddAdjustmentsProps = {
     id?: string;
   };
   isUpdate?: boolean;
-};
+}
 
 const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
   initialData = {},
   isUpdate = false,
 }) => {
-  const [items, setItems] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
+  const [items, setItems] = useState<any[]>([]);
+  const [warehouses, setWarehouses] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     referenceNumber: initialData.referenceNumber || "",
-    addStockQty: initialData.addStockQty || "",
+    addStockQty: initialData.addStockQty?.toString() || "",
     notes: initialData.notes || "",
     receivingWarehouseId: initialData.receivingWarehouseId || "",
     selectitem: initialData.itemId || "",
   });
-  const [formErrors, setFormErrors] = useState({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -63,17 +63,19 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     fetchData();
   }, [initialData]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: name === "addStockQty" ? parseInt(value, 10) || "" : value,
+      [name]: name === "addStockQty" ? value : value,
     }));
     setFormErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const validateForm = () => {
-    const errors = {};
+    const errors: Record<string, string> = {};
     if (!formData.referenceNumber)
       errors.referenceNumber = "Reference number is required.";
     if (!formData.addStockQty)
@@ -85,7 +87,7 @@ const NewAddAdjustments: React.FC<NewAddAdjustmentsProps> = ({
     return errors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
